@@ -1,4 +1,7 @@
 import 'package:event_bus/event_bus.dart';
+import 'package:flutter_github/database/database.dart';
+
+import 'model/github/repo.dart';
 
 var eventBus = EventBus();
 
@@ -13,7 +16,14 @@ class LanguageFilterEvent {
 }
 
 class RepoSelectEvent {
-  String owner;
-  String repo;
-  RepoSelectEvent(this.owner, this.repo);
+  GithubStarredData repo;
+  RepoSelectEvent(this.repo);
 }
+
+class AllStarsEvent {}
+
+class UntaggedStarsEvent {}
+
+class AddTagEvent {}
+
+class RemoveTagEvent {}

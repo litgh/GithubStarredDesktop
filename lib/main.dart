@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -15,19 +14,7 @@ import 'router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  bool isDesktop = Platform.isMacOS || Platform.isWindows || Platform.isLinux;
-  if (isDesktop) {
-    await windowManager.ensureInitialized();
-    WindowOptions windowOptions = const WindowOptions(
-        size: Size(1400, 900),
-        center: true,
-        backgroundColor: Colors.transparent,
-        skipTaskbar: false);
-    windowManager.waitUntilReadyToShow(windowOptions, () async {
-      await windowManager.show();
-      await windowManager.focus();
-    });
-  }
+  await windowManager.ensureInitialized();
 
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
   AppStateManager appStateManager = AppStateManager(sharedPreferences);
@@ -64,7 +51,6 @@ class GithubStarredApp extends StatefulWidget {
 }
 
 class _GithubStarredAppState extends State<GithubStarredApp> {
-  final Database database = Database();
   late final AppRouter _goRouter = AppRouter(widget.appStateManager);
 
   @override
@@ -74,7 +60,6 @@ class _GithubStarredAppState extends State<GithubStarredApp> {
 
   @override
   void dispose() {
-    database.close();
     super.dispose();
   }
 
@@ -82,8 +67,8 @@ class _GithubStarredAppState extends State<GithubStarredApp> {
   Widget build(BuildContext context) {
     return MultiProvider(
         providers: [
-          Provider.value(value: database),
           ChangeNotifierProvider.value(value: widget.appStateManager),
+          Provider(create: (_) => Database.getInstance()),
           ChangeNotifierProvider(create: (_) => UserProvider()),
           ChangeNotifierProvider(create: (_) => SettingProvider())
         ],
@@ -100,7 +85,8 @@ class _GithubStarredAppState extends State<GithubStarredApp> {
                   scrollbarTheme: ScrollbarThemeData(
                       trackVisibility: MaterialStateProperty.all(true),
                       thickness: MaterialStateProperty.all(10),
-                      thumbColor: MaterialStateProperty.all(Colors.blue),
+                      thumbColor: MaterialStateProperty.all(
+                          Colors.grey.withOpacity(0.5)),
                       radius: const Radius.circular(10),
                       minThumbLength: 30)),
             );

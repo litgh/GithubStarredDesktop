@@ -39,7 +39,7 @@ dependencies:
   provider: ^6.0.4
   google_fonts: ^3.0.1
   cached_network_image: ^3.2.2
-  window_manager: ^0.2.7
+  desktop_window: ^0.4.0
   drift: ^2.2.0
   sqlite3_flutter_libs: ^0.5.10
   path_provider: ^2.0.11
@@ -55,6 +55,9 @@ dependencies:
   flash: ^2.0.5
   event_bus: ^2.0.0
   flutter_markdown: ^0.6.12
+  flutter_svg: ^1.1.6
+  chips_input: ^0.1.0
+  window_manager: ^0.2.7
 
 dev_dependencies:
   flutter_test:

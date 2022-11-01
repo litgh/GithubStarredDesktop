@@ -8,4 +8,7 @@ part of 'github_starred_dao.dart';
 
 mixin _$GithubStarredDaoMixin on DatabaseAccessor<Database> {
   $GithubStarredTable get githubStarred => attachedDatabase.githubStarred;
+  $GithubStarredTagsTable get githubStarredTags =>
+      attachedDatabase.githubStarredTags;
+  $GithubTagsTable get githubTags => attachedDatabase.githubTags;
 }

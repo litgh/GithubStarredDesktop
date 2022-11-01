@@ -1,7 +1,5 @@
 import 'dart:convert';
-import 'dart:io';
 
-import 'package:dio/adapter.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_github/api/github.dart';
@@ -54,7 +52,10 @@ class AppStateManager extends ChangeNotifier {
       this.token = token;
     } on DioError catch (e) {
       print(e.toString());
-      await sharedPreferences.remove('token');
+      if (e.response?.statusCode == 404) {
+        await sharedPreferences.remove('token');
+      }
+      this.token = token;
     }
   }
 }

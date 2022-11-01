@@ -8,13 +8,37 @@ import 'tables.dart';
 part 'database.g.dart';
 
 @DriftDatabase(
-    tables: [GithubStarred, GithubRepoTopics, GithubStarredTags, GithubTags],
+    tables: [GithubStarred, GithubStarredTags, GithubTags],
     daos: [GithubTagsDao, GithubStarredDao])
 class Database extends _$Database {
-  Database() : super.connect(impl.connect());
+  static Database? _instance;
 
-  Database.connect(DatabaseConnection connection) : super.connect(connection);
+  factory Database.getInstance() => _get();
+
+  static Database _get() {
+    _instance ??= Database._connect(impl.connect());
+    return _instance!;
+  }
+
+  Database._connect(DatabaseConnection connection) : super.connect(connection);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
+
+  @override
+  MigrationStrategy get migration {
+    return MigrationStrategy(onCreate: (Migrator m) async {
+      await m.createAll();
+    }, onUpgrade: (Migrator m, from, to) async {
+      if (from < 2) {
+        await m.addColumn(githubStarred, githubStarred.tags);
+        await m.addColumn(githubStarred, githubStarred.topics);
+        await m.createIndex(Index('githubStarredTagName',
+            'create index idx_gst_tag on github_starred_tags (name)'));
+        await m.createIndex(Index('githubStarredId',
+            'create index idx_gst_id on github_starred_tags (github_starred_id)'));
+        await m.deleteTable('github_repo_topics');
+      }
+    });
+  }
 }

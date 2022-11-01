@@ -21,6 +21,9 @@ Repo _$RepoFromJson(Map<String, dynamic> json) => Repo(
       size: json['size'] as int,
       topics:
           (json['topics'] as List<dynamic>).map((e) => e as String).toList(),
+      createdAt: json['created_at'] as String,
+      updatedAt: json['updated_at'] as String,
+      pushedAt: json['pushed_at'] as String,
     );
 
 Map<String, dynamic> _$RepoToJson(Repo instance) => <String, dynamic>{
@@ -37,6 +40,9 @@ Map<String, dynamic> _$RepoToJson(Repo instance) => <String, dynamic>{
       'watchers_count': instance.watchersCount,
       'size': instance.size,
       'topics': instance.topics,
+      'created_at': instance.createdAt,
+      'updated_at': instance.updatedAt,
+      'pushed_at': instance.pushedAt,
     };
 
 Owner _$OwnerFromJson(Map<String, dynamic> json) => Owner(

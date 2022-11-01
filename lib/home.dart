@@ -1,3 +1,4 @@
+import 'package:desktop_window/desktop_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_github/component/left_menu.dart';
 import 'package:flutter_github/component/readme.dart';
@@ -5,6 +6,7 @@ import 'package:flutter_github/component/search_bar.dart';
 import 'package:flutter_github/provider/app_state_manager.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:window_manager/window_manager.dart';
 
 import 'provider/user_provider.dart';
 
@@ -61,6 +63,7 @@ class _HomeState extends State<Home> {
                     case 1:
                       context.read<AppStateManager>().logout();
                       context.goNamed('Login');
+                      windowManager.restore();
                       break;
                   }
                 },
@@ -73,7 +76,17 @@ class _HomeState extends State<Home> {
           ],
         ),
         body: Row(
-          children: [LeftMenu(), SearchBar(), Readme()],
+          children: [
+            SizedBox(
+              child: LeftMenu(),
+              width: 250,
+            ),
+            SizedBox(
+              child: SearchBar(),
+              width: 300,
+            ),
+            Expanded(child: Readme())
+          ],
         ));
   }
 }

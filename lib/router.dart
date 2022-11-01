@@ -13,7 +13,7 @@ class AppRouter {
   GoRouter get router => _goRouter;
   late final _goRouter = GoRouter(
     refreshListenable: appStateManager,
-    initialLocation: '/',
+    initialLocation: '/login',
     routes: <GoRoute>[
       GoRoute(
           path: '/',
@@ -29,7 +29,7 @@ class AppRouter {
         path: '/error',
         name: 'Error',
         builder: (context, state) => Error(error: state.extra.toString()),
-      )
+      ),
     ],
     errorBuilder: (context, state) => Error(error: state.extra.toString()),
     redirect: (context, state) {

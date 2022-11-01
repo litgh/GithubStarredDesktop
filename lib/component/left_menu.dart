@@ -43,10 +43,19 @@ class _LeftMenuState extends State<LeftMenu> with TickerProviderStateMixin {
     Database db = context.read<Database>();
     _getStarredCount(db);
     _selectAllTags(db);
+
+    eventBus.on<AddTagEvent>().listen((event) {
+      _getStarredCount(db);
+      _selectAllTags(db);
+    });
+    eventBus.on<RemoveTagEvent>().listen((event) {
+      _getStarredCount(db);
+      _selectAllTags(db);
+    });
   }
 
   _selectAllTags(Database db) async {
-    var l = await db.githubTagsDao.findAll();
+    var l = await db.githubTagsDao.findAll('');
     setState(() {
       _allTags = l;
     });
@@ -64,7 +73,7 @@ class _LeftMenuState extends State<LeftMenu> with TickerProviderStateMixin {
     int? taggedStars = await db.githubTagsDao.taggedStars();
     int? totalStars = await db.githubStarredDao.totalCount();
     _allStars.value = '${totalStars ?? 0}';
-    _unTaggedStars.value = '${totalStars ?? 0 - (taggedStars ?? 0)}';
+    _unTaggedStars.value = '${(totalStars ?? 0) - (taggedStars ?? 0)}';
     _refreshController.stop();
   }
 
@@ -199,29 +208,22 @@ class _LeftMenuState extends State<LeftMenu> with TickerProviderStateMixin {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        // Row(
-        //   children: [
-        //     Icon(
-        //       Icons.star,
-        //       size: 18,
-        //       color: _selectedColor,
-        //     ),
-        //     const SizedBox(
-        //       width: 6,
-        //     ),
-        //     Text(
-        //       'All Stars',
-        //       style: TextStyle(color: _selectedColor, fontSize: 16),
-        //     )
-        //   ],
-        // ),
         _myTextButton(
-            onPressed: () {},
+            onPressed: () {
+              eventBus.fire(AllStarsEvent());
+              setState(() {
+                _selected = 'All Stars';
+              });
+            },
             label: const Text('All Stars'),
             icon: const Icon(
               Icons.star,
               size: 18,
-            )),
+            ),
+            style: _selected == 'All Stars'
+                ? ButtonStyle(
+                    foregroundColor: MaterialStateProperty.all(_selectedColor))
+                : null),
         ValueListenableBuilder(
             valueListenable: _allStars,
             builder: (context, value, child) => Badge(
@@ -239,29 +241,22 @@ class _LeftMenuState extends State<LeftMenu> with TickerProviderStateMixin {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        // Row(
-        //   children: [
-        //     Icon(
-        //       Icons.star_border,
-        //       size: 18,
-        //       color: _selectedColor,
-        //     ),
-        //     const SizedBox(
-        //       width: 6,
-        //     ),
-        //     Text(
-        //       'Untagged Stars',
-        //       style: TextStyle(color: _selectedColor, fontSize: 16),
-        //     )
-        //   ],
-        // ),
         _myTextButton(
-            onPressed: () {},
+            onPressed: () {
+              eventBus.fire(UntaggedStarsEvent());
+              setState(() {
+                _selected = 'Untagged Stars';
+              });
+            },
             label: const Text('Untagged Stars'),
             icon: const Icon(
               Icons.star_border,
               size: 18,
-            )),
+            ),
+            style: _selected == 'Untagged Stars'
+                ? ButtonStyle(
+                    foregroundColor: MaterialStateProperty.all(_selectedColor))
+                : null),
         ValueListenableBuilder(
             valueListenable: _unTaggedStars,
             builder: (context, value, child) => Badge(

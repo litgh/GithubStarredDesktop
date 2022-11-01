@@ -12,16 +12,13 @@ class GithubStarred extends Table {
   TextColumn get owner => text().withLength(max: 512)();
   IntColumn get forksCount => integer().named('forks_count')();
   IntColumn get stargzaersCount => integer().named('stargazers_count')();
+  TextColumn get topics => text().nullable().withLength(max: 4096)();
+  TextColumn get tags => text().nullable().withLength(max: 4096)();
   DateTimeColumn get createdAt => dateTime().nullable().named('created_at')();
   DateTimeColumn get updatedAt => dateTime().nullable().named('updated_at')();
 
   @override
   Set<Column> get primaryKey => {id};
-}
-
-class GithubRepoTopics extends Table with AutoIncrement {
-  TextColumn get name => text().withLength(max: 64)();
-  IntColumn get githubStarredId => integer().named('github_starred_id')();
 }
 
 class GithubStarredTags extends Table with AutoIncrement {

@@ -18,6 +18,8 @@ class GithubStarredData extends DataClass
   final String owner;
   final int forksCount;
   final int stargzaersCount;
+  final String? topics;
+  final String? tags;
   final DateTime? createdAt;
   final DateTime? updatedAt;
   const GithubStarredData(
@@ -30,6 +32,8 @@ class GithubStarredData extends DataClass
       required this.owner,
       required this.forksCount,
       required this.stargzaersCount,
+      this.topics,
+      this.tags,
       this.createdAt,
       this.updatedAt});
   @override
@@ -48,6 +52,12 @@ class GithubStarredData extends DataClass
     map['owner'] = Variable<String>(owner);
     map['forks_count'] = Variable<int>(forksCount);
     map['stargazers_count'] = Variable<int>(stargzaersCount);
+    if (!nullToAbsent || topics != null) {
+      map['topics'] = Variable<String>(topics);
+    }
+    if (!nullToAbsent || tags != null) {
+      map['tags'] = Variable<String>(tags);
+    }
     if (!nullToAbsent || createdAt != null) {
       map['created_at'] = Variable<DateTime>(createdAt);
     }
@@ -72,6 +82,9 @@ class GithubStarredData extends DataClass
       owner: Value(owner),
       forksCount: Value(forksCount),
       stargzaersCount: Value(stargzaersCount),
+      topics:
+          topics == null && nullToAbsent ? const Value.absent() : Value(topics),
+      tags: tags == null && nullToAbsent ? const Value.absent() : Value(tags),
       createdAt: createdAt == null && nullToAbsent
           ? const Value.absent()
           : Value(createdAt),
@@ -94,6 +107,8 @@ class GithubStarredData extends DataClass
       owner: serializer.fromJson<String>(json['owner']),
       forksCount: serializer.fromJson<int>(json['forksCount']),
       stargzaersCount: serializer.fromJson<int>(json['stargzaersCount']),
+      topics: serializer.fromJson<String?>(json['topics']),
+      tags: serializer.fromJson<String?>(json['tags']),
       createdAt: serializer.fromJson<DateTime?>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime?>(json['updatedAt']),
     );
@@ -111,6 +126,8 @@ class GithubStarredData extends DataClass
       'owner': serializer.toJson<String>(owner),
       'forksCount': serializer.toJson<int>(forksCount),
       'stargzaersCount': serializer.toJson<int>(stargzaersCount),
+      'topics': serializer.toJson<String?>(topics),
+      'tags': serializer.toJson<String?>(tags),
       'createdAt': serializer.toJson<DateTime?>(createdAt),
       'updatedAt': serializer.toJson<DateTime?>(updatedAt),
     };
@@ -126,6 +143,8 @@ class GithubStarredData extends DataClass
           String? owner,
           int? forksCount,
           int? stargzaersCount,
+          Value<String?> topics = const Value.absent(),
+          Value<String?> tags = const Value.absent(),
           Value<DateTime?> createdAt = const Value.absent(),
           Value<DateTime?> updatedAt = const Value.absent()}) =>
       GithubStarredData(
@@ -138,6 +157,8 @@ class GithubStarredData extends DataClass
         owner: owner ?? this.owner,
         forksCount: forksCount ?? this.forksCount,
         stargzaersCount: stargzaersCount ?? this.stargzaersCount,
+        topics: topics.present ? topics.value : this.topics,
+        tags: tags.present ? tags.value : this.tags,
         createdAt: createdAt.present ? createdAt.value : this.createdAt,
         updatedAt: updatedAt.present ? updatedAt.value : this.updatedAt,
       );
@@ -153,6 +174,8 @@ class GithubStarredData extends DataClass
           ..write('owner: $owner, ')
           ..write('forksCount: $forksCount, ')
           ..write('stargzaersCount: $stargzaersCount, ')
+          ..write('topics: $topics, ')
+          ..write('tags: $tags, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -160,8 +183,20 @@ class GithubStarredData extends DataClass
   }
 
   @override
-  int get hashCode => Object.hash(id, name, fullName, htmlUrl, description,
-      language, owner, forksCount, stargzaersCount, createdAt, updatedAt);
+  int get hashCode => Object.hash(
+      id,
+      name,
+      fullName,
+      htmlUrl,
+      description,
+      language,
+      owner,
+      forksCount,
+      stargzaersCount,
+      topics,
+      tags,
+      createdAt,
+      updatedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -175,6 +210,8 @@ class GithubStarredData extends DataClass
           other.owner == this.owner &&
           other.forksCount == this.forksCount &&
           other.stargzaersCount == this.stargzaersCount &&
+          other.topics == this.topics &&
+          other.tags == this.tags &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -189,6 +226,8 @@ class GithubStarredCompanion extends UpdateCompanion<GithubStarredData> {
   final Value<String> owner;
   final Value<int> forksCount;
   final Value<int> stargzaersCount;
+  final Value<String?> topics;
+  final Value<String?> tags;
   final Value<DateTime?> createdAt;
   final Value<DateTime?> updatedAt;
   const GithubStarredCompanion({
@@ -201,6 +240,8 @@ class GithubStarredCompanion extends UpdateCompanion<GithubStarredData> {
     this.owner = const Value.absent(),
     this.forksCount = const Value.absent(),
     this.stargzaersCount = const Value.absent(),
+    this.topics = const Value.absent(),
+    this.tags = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
   });
@@ -214,6 +255,8 @@ class GithubStarredCompanion extends UpdateCompanion<GithubStarredData> {
     required String owner,
     required int forksCount,
     required int stargzaersCount,
+    this.topics = const Value.absent(),
+    this.tags = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
   })  : name = Value(name),
@@ -232,6 +275,8 @@ class GithubStarredCompanion extends UpdateCompanion<GithubStarredData> {
     Expression<String>? owner,
     Expression<int>? forksCount,
     Expression<int>? stargzaersCount,
+    Expression<String>? topics,
+    Expression<String>? tags,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
   }) {
@@ -245,6 +290,8 @@ class GithubStarredCompanion extends UpdateCompanion<GithubStarredData> {
       if (owner != null) 'owner': owner,
       if (forksCount != null) 'forks_count': forksCount,
       if (stargzaersCount != null) 'stargazers_count': stargzaersCount,
+      if (topics != null) 'topics': topics,
+      if (tags != null) 'tags': tags,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
     });
@@ -260,6 +307,8 @@ class GithubStarredCompanion extends UpdateCompanion<GithubStarredData> {
       Value<String>? owner,
       Value<int>? forksCount,
       Value<int>? stargzaersCount,
+      Value<String?>? topics,
+      Value<String?>? tags,
       Value<DateTime?>? createdAt,
       Value<DateTime?>? updatedAt}) {
     return GithubStarredCompanion(
@@ -272,6 +321,8 @@ class GithubStarredCompanion extends UpdateCompanion<GithubStarredData> {
       owner: owner ?? this.owner,
       forksCount: forksCount ?? this.forksCount,
       stargzaersCount: stargzaersCount ?? this.stargzaersCount,
+      topics: topics ?? this.topics,
+      tags: tags ?? this.tags,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -307,6 +358,12 @@ class GithubStarredCompanion extends UpdateCompanion<GithubStarredData> {
     if (stargzaersCount.present) {
       map['stargazers_count'] = Variable<int>(stargzaersCount.value);
     }
+    if (topics.present) {
+      map['topics'] = Variable<String>(topics.value);
+    }
+    if (tags.present) {
+      map['tags'] = Variable<String>(tags.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -328,6 +385,8 @@ class GithubStarredCompanion extends UpdateCompanion<GithubStarredData> {
           ..write('owner: $owner, ')
           ..write('forksCount: $forksCount, ')
           ..write('stargzaersCount: $stargzaersCount, ')
+          ..write('topics: $topics, ')
+          ..write('tags: $tags, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -396,6 +455,20 @@ class $GithubStarredTable extends GithubStarred
   late final GeneratedColumn<int> stargzaersCount = GeneratedColumn<int>(
       'stargazers_count', aliasedName, false,
       type: DriftSqlType.int, requiredDuringInsert: true);
+  final VerificationMeta _topicsMeta = const VerificationMeta('topics');
+  @override
+  late final GeneratedColumn<String> topics = GeneratedColumn<String>(
+      'topics', aliasedName, true,
+      additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 4096),
+      type: DriftSqlType.string,
+      requiredDuringInsert: false);
+  final VerificationMeta _tagsMeta = const VerificationMeta('tags');
+  @override
+  late final GeneratedColumn<String> tags = GeneratedColumn<String>(
+      'tags', aliasedName, true,
+      additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 4096),
+      type: DriftSqlType.string,
+      requiredDuringInsert: false);
   final VerificationMeta _createdAtMeta = const VerificationMeta('createdAt');
   @override
   late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
@@ -417,6 +490,8 @@ class $GithubStarredTable extends GithubStarred
         owner,
         forksCount,
         stargzaersCount,
+        topics,
+        tags,
         createdAt,
         updatedAt
       ];
@@ -482,6 +557,14 @@ class $GithubStarredTable extends GithubStarred
     } else if (isInserting) {
       context.missing(_stargzaersCountMeta);
     }
+    if (data.containsKey('topics')) {
+      context.handle(_topicsMeta,
+          topics.isAcceptableOrUnknown(data['topics']!, _topicsMeta));
+    }
+    if (data.containsKey('tags')) {
+      context.handle(
+          _tagsMeta, tags.isAcceptableOrUnknown(data['tags']!, _tagsMeta));
+    }
     if (data.containsKey('created_at')) {
       context.handle(_createdAtMeta,
           createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
@@ -517,6 +600,10 @@ class $GithubStarredTable extends GithubStarred
           .read(DriftSqlType.int, data['${effectivePrefix}forks_count'])!,
       stargzaersCount: attachedDatabase.options.types
           .read(DriftSqlType.int, data['${effectivePrefix}stargazers_count'])!,
+      topics: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}topics']),
+      tags: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}tags']),
       createdAt: attachedDatabase.options.types
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at']),
       updatedAt: attachedDatabase.options.types
@@ -527,215 +614,6 @@ class $GithubStarredTable extends GithubStarred
   @override
   $GithubStarredTable createAlias(String alias) {
     return $GithubStarredTable(attachedDatabase, alias);
-  }
-}
-
-class GithubRepoTopic extends DataClass implements Insertable<GithubRepoTopic> {
-  final int id;
-  final String name;
-  final int githubStarredId;
-  const GithubRepoTopic(
-      {required this.id, required this.name, required this.githubStarredId});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    map['name'] = Variable<String>(name);
-    map['github_starred_id'] = Variable<int>(githubStarredId);
-    return map;
-  }
-
-  GithubRepoTopicsCompanion toCompanion(bool nullToAbsent) {
-    return GithubRepoTopicsCompanion(
-      id: Value(id),
-      name: Value(name),
-      githubStarredId: Value(githubStarredId),
-    );
-  }
-
-  factory GithubRepoTopic.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return GithubRepoTopic(
-      id: serializer.fromJson<int>(json['id']),
-      name: serializer.fromJson<String>(json['name']),
-      githubStarredId: serializer.fromJson<int>(json['githubStarredId']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'name': serializer.toJson<String>(name),
-      'githubStarredId': serializer.toJson<int>(githubStarredId),
-    };
-  }
-
-  GithubRepoTopic copyWith({int? id, String? name, int? githubStarredId}) =>
-      GithubRepoTopic(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        githubStarredId: githubStarredId ?? this.githubStarredId,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('GithubRepoTopic(')
-          ..write('id: $id, ')
-          ..write('name: $name, ')
-          ..write('githubStarredId: $githubStarredId')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(id, name, githubStarredId);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is GithubRepoTopic &&
-          other.id == this.id &&
-          other.name == this.name &&
-          other.githubStarredId == this.githubStarredId);
-}
-
-class GithubRepoTopicsCompanion extends UpdateCompanion<GithubRepoTopic> {
-  final Value<int> id;
-  final Value<String> name;
-  final Value<int> githubStarredId;
-  const GithubRepoTopicsCompanion({
-    this.id = const Value.absent(),
-    this.name = const Value.absent(),
-    this.githubStarredId = const Value.absent(),
-  });
-  GithubRepoTopicsCompanion.insert({
-    this.id = const Value.absent(),
-    required String name,
-    required int githubStarredId,
-  })  : name = Value(name),
-        githubStarredId = Value(githubStarredId);
-  static Insertable<GithubRepoTopic> custom({
-    Expression<int>? id,
-    Expression<String>? name,
-    Expression<int>? githubStarredId,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (name != null) 'name': name,
-      if (githubStarredId != null) 'github_starred_id': githubStarredId,
-    });
-  }
-
-  GithubRepoTopicsCompanion copyWith(
-      {Value<int>? id, Value<String>? name, Value<int>? githubStarredId}) {
-    return GithubRepoTopicsCompanion(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      githubStarredId: githubStarredId ?? this.githubStarredId,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
-    }
-    if (githubStarredId.present) {
-      map['github_starred_id'] = Variable<int>(githubStarredId.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('GithubRepoTopicsCompanion(')
-          ..write('id: $id, ')
-          ..write('name: $name, ')
-          ..write('githubStarredId: $githubStarredId')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class $GithubRepoTopicsTable extends GithubRepoTopics
-    with TableInfo<$GithubRepoTopicsTable, GithubRepoTopic> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $GithubRepoTopicsTable(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints: 'PRIMARY KEY AUTOINCREMENT');
-  final VerificationMeta _nameMeta = const VerificationMeta('name');
-  @override
-  late final GeneratedColumn<String> name = GeneratedColumn<String>(
-      'name', aliasedName, false,
-      additionalChecks: GeneratedColumn.checkTextLength(maxTextLength: 64),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
-  final VerificationMeta _githubStarredIdMeta =
-      const VerificationMeta('githubStarredId');
-  @override
-  late final GeneratedColumn<int> githubStarredId = GeneratedColumn<int>(
-      'github_starred_id', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
-  @override
-  List<GeneratedColumn> get $columns => [id, name, githubStarredId];
-  @override
-  String get aliasedName => _alias ?? 'github_repo_topics';
-  @override
-  String get actualTableName => 'github_repo_topics';
-  @override
-  VerificationContext validateIntegrity(Insertable<GithubRepoTopic> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('name')) {
-      context.handle(
-          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
-    } else if (isInserting) {
-      context.missing(_nameMeta);
-    }
-    if (data.containsKey('github_starred_id')) {
-      context.handle(
-          _githubStarredIdMeta,
-          githubStarredId.isAcceptableOrUnknown(
-              data['github_starred_id']!, _githubStarredIdMeta));
-    } else if (isInserting) {
-      context.missing(_githubStarredIdMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  GithubRepoTopic map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return GithubRepoTopic(
-      id: attachedDatabase.options.types
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      name: attachedDatabase.options.types
-          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-      githubStarredId: attachedDatabase.options.types
-          .read(DriftSqlType.int, data['${effectivePrefix}github_starred_id'])!,
-    );
-  }
-
-  @override
-  $GithubRepoTopicsTable createAlias(String alias) {
-    return $GithubRepoTopicsTable(attachedDatabase, alias);
   }
 }
 
@@ -1157,8 +1035,6 @@ abstract class _$Database extends GeneratedDatabase {
   _$Database(QueryExecutor e) : super(e);
   _$Database.connect(DatabaseConnection c) : super.connect(c);
   late final $GithubStarredTable githubStarred = $GithubStarredTable(this);
-  late final $GithubRepoTopicsTable githubRepoTopics =
-      $GithubRepoTopicsTable(this);
   late final $GithubStarredTagsTable githubStarredTags =
       $GithubStarredTagsTable(this);
   late final $GithubTagsTable githubTags = $GithubTagsTable(this);
@@ -1170,5 +1046,5 @@ abstract class _$Database extends GeneratedDatabase {
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [githubStarred, githubRepoTopics, githubStarredTags, githubTags];
+      [githubStarred, githubStarredTags, githubTags];
 }

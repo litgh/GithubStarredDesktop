@@ -17,7 +17,10 @@ class Repo {
       required this.stargazersCount,
       required this.watchersCount,
       required this.size,
-      required this.topics});
+      required this.topics,
+      required this.createdAt,
+      required this.updatedAt,
+      required this.pushedAt});
   int id;
   String nodeId;
   String name;
@@ -31,6 +34,9 @@ class Repo {
   int watchersCount;
   int size;
   List<String> topics;
+  String createdAt;
+  String updatedAt;
+  String pushedAt;
 
   factory Repo.fromJson(Map<String, dynamic> json) => _$RepoFromJson(json);
   Map<String, dynamic> toJson() => _$RepoToJson(this);

@@ -6,14 +6,18 @@ import '../database.dart';
 
 part 'github_tags_dao.g.dart';
 
-@DriftAccessor(
-    tables: [GithubTags, GithubRepoTopics, GithubStarred, GithubStarredTags])
+@DriftAccessor(tables: [GithubTags, GithubStarred, GithubStarredTags])
 class GithubTagsDao extends DatabaseAccessor<Database>
     with _$GithubTagsDaoMixin {
   GithubTagsDao(Database db) : super(db);
 
-  Future<List<GithubTag>> findAll() {
-    return select(githubTags).get();
+  Future<List<GithubTag>> findAll(String name) {
+    final q = select(githubTags);
+    if (name.isNotEmpty) {
+      q.where((tbl) => tbl.name.lower().like('%${name.toLowerCase()}%'));
+    }
+    q.orderBy([(t) => OrderingTerm.desc(t.count)]);
+    return q.get();
   }
 
   Future<int> save(GithubTagsCompanion tag) {
@@ -22,7 +26,7 @@ class GithubTagsDao extends DatabaseAccessor<Database>
 
   Future<int?> taggedStars() {
     return customSelect(
-        'select count(*) as c from github_starred_tags group by github_starred_id',
+        'select count(*) as c from (select github_starred_id from github_starred_tags group by github_starred_id)',
         readsFrom: {
           githubStarredTags
         }).map((row) => row.read<int>('c')).getSingleOrNull();
@@ -51,7 +55,9 @@ class GithubTagsDao extends DatabaseAccessor<Database>
             githubStarred.id.equalsExp(githubStarredTags.githubStarredId))
       ])
         ..where(where);
-      query.limit(size, offset: (page - 1) * size);
+      query
+        ..orderBy([OrderingTerm.desc(githubStarred.updatedAt)])
+        ..limit(size, offset: (page - 1) * size);
 
       var l = await query.map((row) => row.readTable(githubStarred)).get();
       return Pageable.of(page, size, (totalCount ~/ size) + 1, list: l);
@@ -59,27 +65,9 @@ class GithubTagsDao extends DatabaseAccessor<Database>
     return Pageable.of(page, size, 0);
   }
 
-  Future<Pageable<GithubStarredData>> findByLanguage(
-      String language, String filter, int page,
-      {int size = 20}) async {
-    return _findByLanguage(page, size, language);
-  }
-
-  Future<Pageable<GithubStarredData>> _findByLanguage(page, size, lang) async {
-    final count = githubStarred.id.count();
-    var countQuery = selectOnly(githubStarred)
-      ..addColumns([count])
-      ..where(githubStarred.language.equals(lang));
-
-    var totalCount =
-        await countQuery.map((row) => row.read(count)!).getSingle();
-    if (totalCount > 0) {
-      var query = select(githubStarred)
-        ..where((tbl) => tbl.language.equals(lang))
-        ..limit(size, offset: (page - 1) * size);
-      var l = await query.get();
-      return Pageable.of(page, size, ((totalCount ~/ size)) + 1, list: l);
-    }
-    return Pageable.of(page, size, 0);
+  Future<List<GithubStarredTag>> findByGithubStarredId(int id) async {
+    final q = select(githubStarredTags)
+      ..where((tbl) => tbl.githubStarredId.equals(id));
+    return q.get();
   }
 }
