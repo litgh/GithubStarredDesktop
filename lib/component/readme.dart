@@ -232,6 +232,7 @@ class _ReadmeState extends State<Readme> {
                   .githubStarredDao
                   .deleteTag(_repo!.id, data.name);
               eventBus.fire(RemoveTagEvent(_repo!, data));
+              eventBus.fire(RefreshEvent());
             });
       }),
       onChanged: (value) async {
@@ -245,6 +246,7 @@ class _ReadmeState extends State<Readme> {
             .copyWith(name: value.last.name, githubStarredId: _repo!.id));
         _tags.add(v);
         eventBus.fire(AddTagEvent(_repo!, value.last));
+        eventBus.fire(RefreshEvent());
       },
       onEditingComplete: () {
         setState(() {

@@ -72,13 +72,13 @@ class _HomeState extends State<Home> {
         ),
         body: Row(
           children: [
-            SizedBox(
-              child: LeftMenu(),
+            const SizedBox(
               width: 250,
+              child: LeftMenu(),
             ),
-            SizedBox(
+            const SizedBox(
+              width: 320,
               child: SearchBar(),
-              width: 300,
             ),
             Expanded(child: Readme())
           ],

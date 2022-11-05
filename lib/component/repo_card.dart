@@ -20,6 +20,7 @@ class RepoCard extends StatefulWidget {
 
 class _RepoCardState extends State<RepoCard> {
   bool _selected = false;
+  bool _showDelIcon = false;
   final Set<_Tag> _tags = {};
   @override
   void initState() {
@@ -80,78 +81,112 @@ class _RepoCardState extends State<RepoCard> {
             _selected = true;
           });
         },
-        onLongPress: () {
-          _showDeleteDialog(context);
+        onHover: (value) {
+          setState(() {
+            _showDelIcon = !_showDelIcon;
+          });
         },
-        child: Container(
-            decoration: BoxDecoration(
-                border: _selected
-                    ? Border(left: BorderSide(width: 5, color: _selectedColor))
-                    : null),
-            child: Card(
-                child: Column(
-              children: [
-                ListTile(
-                  contentPadding: const EdgeInsets.all(8),
-                  title: Text(
-                    widget.repo.fullName,
-                    style: TextStyle(fontSize: 20, color: _selectedColor),
+        child: Stack(children: [
+          Container(
+              decoration: BoxDecoration(
+                  border: _selected
+                      ? Border(
+                          left: BorderSide(width: 5, color: _selectedColor))
+                      : null),
+              child: Card(
+                  child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  ListTile(
+                    contentPadding: const EdgeInsets.all(8),
+                    title: Text(
+                      widget.repo.fullName,
+                      style: TextStyle(fontSize: 20, color: _selectedColor),
+                    ),
+                    subtitle: Padding(
+                      padding: const EdgeInsets.only(top: 5, bottom: 10),
+                      child: Text(
+                        widget.repo.description ?? '',
+                        style:
+                            const TextStyle(fontSize: 14, color: Colors.black),
+                      ),
+                    ),
+                    style: ListTileStyle.drawer,
                   ),
-                  subtitle: Padding(
-                    padding: const EdgeInsets.only(top: 5, bottom: 10),
-                    child: Text(
-                      widget.repo.description ?? '',
-                      style: const TextStyle(fontSize: 14, color: Colors.black),
-                    ),
+                  if (_tags.isNotEmpty) _repoTag(),
+                  Row(
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.only(left: 5, right: 2),
+                        child: Icon(
+                          Icons.star_border,
+                          size: 18,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      Text(
+                        widget.repo.stargzaersCount.toString(),
+                        style:
+                            const TextStyle(color: Colors.grey, fontSize: 11),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(left: 5, right: 3),
+                        child: Icon(
+                          FontAwesomeIcons.codeFork,
+                          size: 13,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      Text(
+                        widget.repo.forksCount.toString(),
+                        style:
+                            const TextStyle(color: Colors.grey, fontSize: 11),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(left: 5, right: 3),
+                        child: Icon(
+                          Icons.calendar_month,
+                          size: 18,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      if (timeAgo.isNotEmpty)
+                        Text(timeAgo,
+                            style: const TextStyle(
+                                fontSize: 11, color: Colors.grey))
+                    ],
                   ),
-                  style: ListTileStyle.drawer,
+                  const SizedBox(
+                    height: 8,
+                  )
+                ],
+              ))),
+          Positioned(
+            top: 5,
+            right: 10,
+            child: Visibility(
+              visible: _showDelIcon,
+              child: InkWell(
+                onTap: () {
+                  _showDeleteDialog(context);
+                },
+                child: Container(
+                  width: 25,
+                  height: 25,
+                  padding: const EdgeInsets.all(3),
+                  decoration: const BoxDecoration(
+                      color: Colors.redAccent,
+                      borderRadius: BorderRadius.all(Radius.circular(50))),
+                  child: const Icon(
+                    Icons.clear,
+                    size: 15,
+                    color: Colors.white,
+                  ),
                 ),
-                if (_tags.isNotEmpty) _repoTag(),
-                Row(
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(left: 5, right: 2),
-                      child: Icon(
-                        Icons.star_border,
-                        size: 18,
-                        color: Colors.grey,
-                      ),
-                    ),
-                    Text(
-                      widget.repo.stargzaersCount.toString(),
-                      style: const TextStyle(color: Colors.grey, fontSize: 11),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.only(left: 5, right: 3),
-                      child: Icon(
-                        FontAwesomeIcons.codeFork,
-                        size: 13,
-                        color: Colors.grey,
-                      ),
-                    ),
-                    Text(
-                      widget.repo.forksCount.toString(),
-                      style: const TextStyle(color: Colors.grey, fontSize: 11),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.only(left: 5, right: 3),
-                      child: Icon(
-                        Icons.calendar_month,
-                        size: 18,
-                        color: Colors.grey,
-                      ),
-                    ),
-                    if (timeAgo.isNotEmpty)
-                      Text(timeAgo,
-                          style:
-                              const TextStyle(fontSize: 11, color: Colors.grey))
-                  ],
-                ),
-                const SizedBox(
-                  height: 8,
-                )
-              ],
-            ))));
+              ),
+            ),
+          ),
+        ]));
   }
 
   _showDeleteDialog(context) {
@@ -165,15 +200,18 @@ class _RepoCardState extends State<RepoCard> {
                   onPressed: () {
                     var db = context.read<Database>();
                     db.githubStarredDao.deleteRepo(widget.repo.id);
-                    eventBus.fire(RefreshEvent());
-                    eventBus.fire(RepoDeleteEvent(widget.repo));
                     var api = context.read<AppStateManager>().api;
-                    api.unStarred(widget.repo.owner, widget.repo.name);
+                    api
+                        .unStarred(widget.repo.owner, widget.repo.name)
+                        .then((value) {
+                      eventBus.fire(RefreshEvent());
+                      eventBus.fire(RepoDeleteEvent(widget.repo));
+                    });
                     setState(() {
                       Navigator.pop(context);
                     });
                   },
-                  child: const Text('SUBMIT')),
+                  child: const Text('YES')),
               TextButton(
                   onPressed: () {
                     setState(() {
@@ -181,7 +219,7 @@ class _RepoCardState extends State<RepoCard> {
                     });
                   },
                   child: const Text(
-                    'CANCEL',
+                    'NO',
                     style: TextStyle(color: Colors.grey),
                   )),
             ],
@@ -194,8 +232,8 @@ class _RepoCardState extends State<RepoCard> {
       return Container();
     }
     return Container(
-      width: 300,
       padding: const EdgeInsets.all(8),
+      alignment: Alignment.topLeft,
       child: Wrap(
         spacing: 4,
         runSpacing: 4,
