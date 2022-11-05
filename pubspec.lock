@@ -321,6 +321,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.6.12"
+  flutter_settings_screens:
+    dependency: "direct main"
+    description:
+      name: flutter_settings_screens
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.3.3-null-safety+2"
   flutter_svg:
     dependency: "direct main"
     description:

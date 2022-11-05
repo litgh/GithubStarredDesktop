@@ -43,6 +43,9 @@ class _ReadmeState extends State<Readme> {
     var db = context.read<Database>();
 
     eventBus.on<RepoSelectEvent>().listen((event) async {
+      if (_repo != null && event.repo.id == _repo!.id) {
+        return;
+      }
       _repo = event.repo;
       _tags.clear();
       showDialog(
@@ -65,6 +68,13 @@ class _ReadmeState extends State<Readme> {
         _editTag = false;
         Navigator.of(context).pop();
       });
+    });
+    eventBus.on<RepoDeleteEvent>().listen((event) {
+      if (_repo != null && event.repo.id == _repo!.id) {
+        setState(() {
+          _repo = null;
+        });
+      }
     });
 
     _editTagController.addListener(() {

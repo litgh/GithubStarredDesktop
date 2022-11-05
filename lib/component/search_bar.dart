@@ -24,8 +24,7 @@ class _SearchBarState extends State<SearchBar> {
   int _page = 1;
   Filter _filter = Filter.none;
   String _filterValue = '';
-  String _loadingText = '数据加载中...';
-  int _selectRepo = -1;
+  String _loadingText = 'Loading...';
 
   @override
   void initState() {

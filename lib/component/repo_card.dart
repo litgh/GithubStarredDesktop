@@ -1,6 +1,7 @@
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_github/event.dart';
+import 'package:flutter_github/provider/app_state_manager.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
@@ -158,7 +159,6 @@ class _RepoCardState extends State<RepoCard> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: const Text('Unstar Repo'),
             content: const Text('Are you sure you want to delete this Repo?'),
             actions: [
               TextButton(
@@ -167,6 +167,8 @@ class _RepoCardState extends State<RepoCard> {
                     db.githubStarredDao.deleteRepo(widget.repo.id);
                     eventBus.fire(RefreshEvent());
                     eventBus.fire(RepoDeleteEvent(widget.repo));
+                    var api = context.read<AppStateManager>().api;
+                    api.unStarred(widget.repo.owner, widget.repo.name);
                     setState(() {
                       Navigator.pop(context);
                     });

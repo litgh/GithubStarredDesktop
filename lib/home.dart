@@ -1,4 +1,3 @@
-import 'package:desktop_window/desktop_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_github/component/left_menu.dart';
 import 'package:flutter_github/component/readme.dart';
@@ -49,7 +48,7 @@ class _HomeState extends State<Home> {
                                 backgroundImage: NetworkImage(
                                     userProvider.user?.avatarUrl ?? ''))),
                 itemBuilder: (context) => [
-                  const PopupMenuItem<int>(value: 0, child: Text('Error')),
+                  const PopupMenuItem<int>(value: 0, child: Text('Settings')),
                   const PopupMenuItem<int>(
                     value: 1,
                     child: Text('Log Out'),
@@ -58,7 +57,7 @@ class _HomeState extends State<Home> {
                 onSelected: (item) {
                   switch (item) {
                     case 0:
-                      context.goNamed('Error');
+                      context.goNamed('Settings');
                       break;
                     case 1:
                       context.read<AppStateManager>().logout();
@@ -69,10 +68,6 @@ class _HomeState extends State<Home> {
                 },
               ),
             ),
-            Padding(
-                padding: const EdgeInsets.only(right: 30),
-                child: IconButton(
-                    onPressed: () {}, icon: const Icon(Icons.settings)))
           ],
         ),
         body: Row(

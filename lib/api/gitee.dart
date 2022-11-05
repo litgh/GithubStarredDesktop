@@ -31,4 +31,6 @@ class GiteeAPI implements OpenAPI {
   Future<String> readme(String owner, String repo) async {
     return Future.value('');
   }
+
+  Future<void> unStarred(String owner, String repo) async {}
 }

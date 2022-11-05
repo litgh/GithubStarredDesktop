@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_github/api/github.dart';
 import 'package:flutter_github/provider/app_state_manager.dart';
-import 'package:flutter_github/provider/settings_provider.dart';
 import 'package:flutter_github/util.dart';
+import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -55,9 +55,7 @@ class _LoginState extends State<Login>
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) async {
     if (state == AppLifecycleState.resumed && loging) {
-      _getAccessToken(
-              context.read<AppStateManager>(), context.read<SettingProvider>())
-          .then((value) {
+      _getAccessToken(context.read<AppStateManager>()).then((value) {
         context.go('/');
       }, onError: (e) {
         showDialog(
@@ -147,8 +145,7 @@ class _LoginState extends State<Login>
     );
   }
 
-  Future<void> _getAccessToken(
-      AppStateManager appStateManager, SettingProvider settings) async {
+  Future<void> _getAccessToken(AppStateManager appStateManager) async {
     const platform = MethodChannel('app.channel.shared.data');
     final code = await platform.invokeMethod('getLoginCode');
     if (code == null || code == '') {
@@ -159,7 +156,7 @@ class _LoginState extends State<Login>
     });
     var authCode = code.toString().split('=')[1];
     final token = await GithubAPI.getAccessToken(
-        authCode, settings.proxyServer ?? '127.0.0.1:7890');
+        authCode, Settings.getValue<String>('proxy') ?? '');
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('token', token);
     print('TOKEN=========>$token');

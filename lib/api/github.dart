@@ -75,6 +75,10 @@ class GithubAPI implements OpenAPI {
     Response response = await dio.get('/repos/$owner/$repo/readme');
     return response.data['content'];
   }
+
+  Future<void> unStarred(String owner, String repo) async {
+    await dio.delete('/user/starred/$owner/$repo');
+  }
 }
 
 class AuthInterceptors extends Interceptor {

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_github/api/github.dart';
+import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../api/openapi.dart';
@@ -39,7 +40,7 @@ class AppStateManager extends ChangeNotifier {
     Dio dio = Dio();
     dio.options.connectTimeout = 10000;
     dio.options.receiveTimeout = 30000;
-    OpenAPI.withProxy(dio, '127.0.0.1:7890');
+    OpenAPI.withProxy(dio, Settings.getValue<String>('proxy') ?? '');
 
     try {
       await dio.post('https://api.github.com/applications/$CLIENT_ID/token',

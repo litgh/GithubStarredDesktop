@@ -1,4 +1,5 @@
 import 'package:flutter_github/provider/app_state_manager.dart';
+import 'package:flutter_github/setting.dart';
 import 'package:go_router/go_router.dart';
 
 import 'home.dart';
@@ -30,16 +31,20 @@ class AppRouter {
         name: 'Error',
         builder: (context, state) => Error(error: state.extra.toString()),
       ),
+      GoRoute(
+          path: '/settings',
+          name: 'Settings',
+          builder: ((context, state) => Setting()))
     ],
     errorBuilder: (context, state) => Error(error: state.extra.toString()),
     redirect: (context, state) {
       final loginLocation = state.namedLocation('Login');
-      final homeLocation = state.namedLocation('Home');
+      // final homeLocation = state.namedLocation('Home');
       final isLogedIn = appStateManager.loggedIn;
       final isGoToLogin = state.subloc == loginLocation;
-      if (isLogedIn && isGoToLogin) {
-        return homeLocation;
-      }
+      // if (isLogedIn && isGoToLogin) {
+      //   return homeLocation;
+      // }
       if (!isLogedIn && !isGoToLogin) {
         return loginLocation;
       }

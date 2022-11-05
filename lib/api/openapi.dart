@@ -11,6 +11,7 @@ abstract class OpenAPI {
   Future<UserModel> user();
   Future<Pageable<Repo>> starred(int page, {int size = 10});
   Future<String> readme(String owner, String repo);
+  Future<void> unStarred(String owner, String repo);
 
   static void withProxy(Dio dio, String proxyServer) {
     if (proxyServer.isNotEmpty) {
