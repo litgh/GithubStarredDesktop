@@ -44,11 +44,7 @@ class _LeftMenuState extends State<LeftMenu> with TickerProviderStateMixin {
     _getStarredCount(db);
     _selectAllTags(db);
 
-    eventBus.on<AddTagEvent>().listen((event) {
-      _getStarredCount(db);
-      _selectAllTags(db);
-    });
-    eventBus.on<RemoveTagEvent>().listen((event) {
+    eventBus.on<RefreshEvent>().listen((event) {
       _getStarredCount(db);
       _selectAllTags(db);
     });

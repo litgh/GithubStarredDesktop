@@ -1,9 +1,9 @@
 import 'package:event_bus/event_bus.dart';
 import 'package:flutter_github/database/database.dart';
 
-import 'model/github/repo.dart';
-
 var eventBus = EventBus();
+
+class RefreshEvent {}
 
 class TagFilterEvent {
   String tag;
@@ -20,10 +20,23 @@ class RepoSelectEvent {
   RepoSelectEvent(this.repo);
 }
 
+class RepoDeleteEvent {
+  GithubStarredData repo;
+  RepoDeleteEvent(this.repo);
+}
+
 class AllStarsEvent {}
 
 class UntaggedStarsEvent {}
 
-class AddTagEvent {}
+class AddTagEvent {
+  GithubStarredData repo;
+  GithubStarredTag tag;
+  AddTagEvent(this.repo, this.tag);
+}
 
-class RemoveTagEvent {}
+class RemoveTagEvent {
+  GithubStarredData repo;
+  GithubStarredTag tag;
+  RemoveTagEvent(this.repo, this.tag);
+}

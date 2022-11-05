@@ -201,4 +201,14 @@ where ifnull(gst.github_starred_id, 0) != ? and t.name like ? group by t.name
     (update(githubStarred)..where((tbl) => tbl.id.equals(id))).write(
         GithubStarredCompanion(tags: Value(l.map((e) => e.name).join(','))));
   }
+
+  void deleteRepo(int id) async {
+    await (delete(githubStarred)..where((tbl) => tbl.id.equals(id))).go();
+    await customUpdate(
+        'update github_tags set count = count - 1 where name in (select name from github_starred_tags where github_starred_id = ?)',
+        variables: [Variable.withInt(id)]);
+    await (delete(githubStarredTags)
+          ..where((tbl) => tbl.githubStarredId.equals(id)))
+        .go();
+  }
 }

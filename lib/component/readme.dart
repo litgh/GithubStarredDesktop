@@ -26,11 +26,13 @@ class _ReadmeState extends State<Readme> {
   String readme = '';
   GithubStarredData? _repo;
   Set<GithubStarredTag> _tags = <GithubStarredTag>{};
-  bool _editTag = false;
 
   GlobalKey<ChipsInputState> _editTagKey = GlobalKey();
   late FocusNode _editTagFocus;
   late TextEditingController _editTagController;
+
+  bool _editTag = false;
+  bool _loading = false;
 
   @override
   void initState() {
@@ -43,6 +45,15 @@ class _ReadmeState extends State<Readme> {
     eventBus.on<RepoSelectEvent>().listen((event) async {
       _repo = event.repo;
       _tags.clear();
+      showDialog(
+          context: context,
+          builder: (_) => const Center(
+                child: SizedBox(
+                  width: 30,
+                  height: 30,
+                  child: CircularProgressIndicator(),
+                ),
+              ));
 
       var l = await db.githubTagsDao.findByGithubStarredId(event.repo.id);
 
@@ -52,6 +63,7 @@ class _ReadmeState extends State<Readme> {
         readme = utf8.decode(base64.decode(md));
         _tags.addAll(l);
         _editTag = false;
+        Navigator.of(context).pop();
       });
     });
 
@@ -209,7 +221,7 @@ class _ReadmeState extends State<Readme> {
                   .read<Database>()
                   .githubStarredDao
                   .deleteTag(_repo!.id, data.name);
-              eventBus.fire(RemoveTagEvent());
+              eventBus.fire(RemoveTagEvent(_repo!, data));
             });
       }),
       onChanged: (value) async {
@@ -222,7 +234,7 @@ class _ReadmeState extends State<Readme> {
             .last
             .copyWith(name: value.last.name, githubStarredId: _repo!.id));
         _tags.add(v);
-        eventBus.fire(AddTagEvent());
+        eventBus.fire(AddTagEvent(_repo!, value.last));
       },
       onEditingComplete: () {
         setState(() {
