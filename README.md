@@ -2,6 +2,6 @@
 
 ## 项目截图
 
-![img](https://github.com/litgh/GithubStarredDesktop/example/snapshot/login.jpg)
+![img](example/snapshot/login.jpg)
 
-![img](https://github.com/litgh/GithubStarredDesktop/example/snapshot/home.jpg)
+![img](example/snapshot/home.jpg)
