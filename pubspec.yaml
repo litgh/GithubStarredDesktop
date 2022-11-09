@@ -61,6 +61,7 @@ dependencies:
   flutter_settings_screens: ^0.3.3-null-safety+2
   markdown: ^6.0.1
   dio_cache_interceptor: ^3.3.1
+  readmore: ^2.2.0
 
 dev_dependencies:
   flutter_test:

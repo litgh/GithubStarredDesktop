@@ -13,7 +13,14 @@ class _SettingState extends State<Setting> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text('Settings')),
+        appBar: AppBar(
+            title: const Text('Settings'),
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            )),
         backgroundColor: Colors.grey.withOpacity(0.3),
         body: Center(
             child: Container(
@@ -31,11 +38,6 @@ class _SettingState extends State<Setting> {
                 title: 'Proxy',
                 settingKey: 'proxy',
               ),
-              TextButton(
-                  onPressed: () {
-                    context.goNamed('Home');
-                  },
-                  child: Text('OK'))
             ],
           ),
         )));
