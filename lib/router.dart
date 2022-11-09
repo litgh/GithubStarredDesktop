@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'home.dart';
 import 'login.dart';
 import 'error.dart';
+import 'search.dart';
 
 class AppRouter {
   late final AppStateManager appStateManager;
@@ -34,7 +35,12 @@ class AppRouter {
       GoRoute(
           path: '/settings',
           name: 'Settings',
-          builder: ((context, state) => Setting()))
+          builder: ((context, state) => Setting())),
+      GoRoute(
+        path: '/search',
+        name: 'Search',
+        builder: (context, state) => Search(),
+      )
     ],
     errorBuilder: (context, state) => Error(error: state.extra.toString()),
     redirect: (context, state) {

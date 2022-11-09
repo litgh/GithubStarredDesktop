@@ -152,14 +152,16 @@ class GithubStarredDao extends DatabaseAccessor<Database>
 
   Future<List<GithubStarredTag>> findNewTag(int id, String query) async {
     return customSelect('''
-select t.name from
+select gst.id, t.name from
              github_tags t left join github_starred_tags gst on t.name = gst.name
 where ifnull(gst.github_starred_id, 0) != ? and t.name like ? group by t.name
 ''',
             readsFrom: {githubTags, githubStarredTags},
             variables: [Variable.withInt(id), Variable.withString('%$query%')])
         .map((row) => GithubStarredTag(
-            id: 0, name: row.read<String>('name'), githubStarredId: 0))
+            id: row.read<int?>('id') ?? 0,
+            name: row.read<String>('name'),
+            githubStarredId: 0))
         .get();
   }
 

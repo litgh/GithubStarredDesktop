@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chips_input/chips_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_github/database/database.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_github/event.dart';
 import 'package:flutter_github/provider/app_state_manager.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:markdown/markdown.dart' as md;
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -117,67 +119,68 @@ class _ReadmeState extends State<Readme> {
             alignment: Alignment.center,
             child: const Text('No Repo Selected'),
           )
-        : Column(
-            children: [
-              Container(
-                alignment: Alignment.centerLeft,
-                padding: const EdgeInsets.only(left: 15, top: 20),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(bottom: 10),
-                      child: InkWell(
-                        onTap: () async {
-                          await launchUrlString(_repo!.htmlUrl);
-                        },
-                        child: Text(_repo!.fullName,
-                            style: const TextStyle(
-                                color: Color(0xff0969da),
-                                fontSize: 25,
-                                fontWeight: FontWeight.w400)),
-                      ),
+        : Column(children: [
+            Container(
+              alignment: Alignment.centerLeft,
+              padding: const EdgeInsets.only(left: 15, top: 20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 10),
+                    child: InkWell(
+                      onTap: () async {
+                        await launchUrlString(_repo!.htmlUrl);
+                      },
+                      child: Text(_repo!.fullName,
+                          style: const TextStyle(
+                              color: Color(0xff0969da),
+                              fontSize: 25,
+                              fontWeight: FontWeight.w400)),
                     ),
-                    if (_editTag) _editTags(),
-                    if (!_editTag) _displayTags(),
-                    const SizedBox(
-                      height: 10,
-                    )
+                  ),
+                  if (_editTag) _editTags(),
+                  if (!_editTag) _displayTags(),
+                  const SizedBox(
+                    height: 10,
+                  )
+                ],
+              ),
+            ),
+            const Divider(
+              height: 2,
+            ),
+            Expanded(
+              child: Markdown(
+                onTapLink: (text, href, title) async {
+                  if (href != null && await canLaunchUrlString(href)) {
+                    await launchUrlString(href);
+                  }
+                },
+                styleSheet: MarkdownStyleSheet(
+                    p: const TextStyle(fontFamily: 'monospace', fontSize: 15),
+                    code: const TextStyle(
+                        fontFamily: 'monospace',
+                        fontSize: 15,
+                        color: Color(0xff3d4852)),
+                    codeblockDecoration: BoxDecoration(
+                        border: Border.all(color: Colors.black26))),
+                data: readme,
+                imageBuilder: (uri, title, alt) => CachedNetworkImage(
+                  imageUrl: uri.toString(),
+                  errorWidget: (context, url, error) => SvgPicture.network(url),
+                ),
+                extensionSet: md.ExtensionSet(
+                  md.ExtensionSet.gitHubFlavored.blockSyntaxes,
+                  [
+                    md.EmojiSyntax(),
+                    ...md.ExtensionSet.gitHubFlavored.inlineSyntaxes,
                   ],
                 ),
               ),
-              const Divider(
-                height: 2,
-              ),
-              Expanded(
-                  child: Markdown(
-                      onTapLink: (text, href, title) async {
-                        if (href != null && await canLaunchUrlString(href)) {
-                          await launchUrlString(href);
-                        }
-                      },
-                      styleSheet: MarkdownStyleSheet(
-                          p: const TextStyle(
-                              fontFamily: 'monospace', fontSize: 15),
-                          code: const TextStyle(
-                              fontFamily: 'monospace',
-                              fontSize: 15,
-                              color: Color(0xff3d4852)),
-                          codeblockDecoration: BoxDecoration(
-                              border: Border.all(color: Colors.black26))),
-                      data: readme,
-                      imageBuilder: (uri, title, alt) {
-                        if (uri.scheme == 'http' || uri.scheme == 'https') {
-                          if (uri.path.endsWith('svg')) {
-                            return SvgPicture.network(uri.toString());
-                          }
-                          return Image.network(uri.toString());
-                        }
-                        return const SizedBox();
-                      }))
-            ],
-          );
+            )
+          ]);
   }
 
   Widget _displayTags() {
@@ -278,15 +281,26 @@ class _ReadmeState extends State<Readme> {
         return l;
       },
       suggestionBuilder: (context, data) {
-        return ListTile(
-          contentPadding: EdgeInsets.zero,
-          title: Text(data.name),
-          leading: data.id == 0
-              ? const Icon(
-                  Icons.add,
-                )
-              : null,
-        );
+        return Row(children: [
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: Text(
+              data.name,
+              style: const TextStyle(fontSize: 20),
+            ),
+          ),
+          if (data.id == 0)
+            Container(
+              padding: const EdgeInsets.all(3),
+              decoration: BoxDecoration(
+                  color: Colors.grey.withOpacity(0.4),
+                  borderRadius: const BorderRadius.all(Radius.circular(8))),
+              child: const Text(
+                '新增并添加',
+                style: TextStyle(fontSize: 13, color: Colors.white),
+              ),
+            ),
+        ]);
       },
     );
   }

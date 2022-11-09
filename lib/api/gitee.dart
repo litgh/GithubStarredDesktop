@@ -33,4 +33,10 @@ class GiteeAPI implements OpenAPI {
   }
 
   Future<void> unStarred(String owner, String repo) async {}
+
+  @override
+  Future<Pageable<Repo>> search(String q, int page,
+      {int size = 10, String sort = '', String order = ''}) {
+    throw UnimplementedError();
+  }
 }

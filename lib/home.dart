@@ -48,18 +48,26 @@ class _HomeState extends State<Home> {
                                 backgroundImage: NetworkImage(
                                     userProvider.user?.avatarUrl ?? ''))),
                 itemBuilder: (context) => [
-                  const PopupMenuItem<int>(value: 0, child: Text('Settings')),
+                  const PopupMenuItem<int>(value: 0, child: Text('Home')),
+                  const PopupMenuItem<int>(value: 1, child: Text('Search')),
+                  const PopupMenuItem<int>(value: 2, child: Text('Settings')),
                   const PopupMenuItem<int>(
-                    value: 1,
+                    value: 3,
                     child: Text('Log Out'),
                   )
                 ],
                 onSelected: (item) {
                   switch (item) {
                     case 0:
-                      context.goNamed('Settings');
+                      context.goNamed('Home');
                       break;
                     case 1:
+                      context.goNamed('Search');
+                      break;
+                    case 2:
+                      context.goNamed('Settings');
+                      break;
+                    case 3:
                       context.read<AppStateManager>().logout();
                       context.goNamed('Login');
                       windowManager.restore();

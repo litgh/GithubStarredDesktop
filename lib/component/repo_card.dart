@@ -38,7 +38,7 @@ class _RepoCardState extends State<RepoCard> {
       if (event.repo.id == widget.repo.id) {
         if (mounted) {
           setState(() {
-            _tags.remove(event.tag.name);
+            _tags.remove(event.tag);
           });
         }
       }
@@ -64,6 +64,7 @@ class _RepoCardState extends State<RepoCard> {
   @override
   Widget build(BuildContext context) {
     var timeAgo = '';
+    var starCount = '';
     if (widget.repo.updatedAt != null) {
       var d = DateTime.now().difference(widget.repo.updatedAt!);
       if (d.inDays > 0) {
@@ -73,6 +74,11 @@ class _RepoCardState extends State<RepoCard> {
       } else if (d.inMinutes > 0) {
         timeAgo = '${d.inMinutes}m ago';
       }
+    }
+    if (widget.repo.stargzaersCount < 1000) {
+      starCount = widget.repo.stargzaersCount.toString();
+    } else {
+      starCount = (widget.repo.stargzaersCount / 1000).toStringAsFixed(2) + 'k';
     }
     return InkWell(
         onTap: () {
@@ -125,7 +131,7 @@ class _RepoCardState extends State<RepoCard> {
                         ),
                       ),
                       Text(
-                        widget.repo.stargzaersCount.toString(),
+                        starCount,
                         style:
                             const TextStyle(color: Colors.grey, fontSize: 11),
                       ),

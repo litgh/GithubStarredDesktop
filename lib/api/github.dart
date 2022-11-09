@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:dio_cache_interceptor/dio_cache_interceptor.dart';
 
 import '../constants.dart';
 import '../model/github/repo.dart';
@@ -20,7 +21,12 @@ class GithubAPI implements OpenAPI {
         baseUrl: 'https://api.github.com',
         connectTimeout: 10000,
         receiveTimeout: 30000))
-      ..interceptors.add(AuthInterceptors(_token));
+      ..interceptors.add(AuthInterceptors(_token))
+      ..interceptors.add(DioCacheInterceptor(
+          options: CacheOptions(
+              store: MemCacheStore(),
+              policy: CachePolicy.refreshForceCache,
+              hitCacheOnErrorExcept: [401, 403, 503])));
   }
 
   factory GithubAPI.withProxy(String token, String proxyServer) {
@@ -78,6 +84,22 @@ class GithubAPI implements OpenAPI {
 
   Future<void> unStarred(String owner, String repo) async {
     await dio.delete('/user/starred/$owner/$repo');
+  }
+
+  Future<Pageable<Repo>> search(String q, int page,
+      {int size = 10, String sort = '', String order = ''}) async {
+    Response response = await dio.get('/search/repositories', queryParameters: {
+      'q': q,
+      'page': page.toString(),
+      'per_page': size,
+      'sort': sort,
+      'order': order
+    });
+    int total = response.data['total_count'];
+    return Pageable.of(page, size, total ~/ page + 1,
+        list: (response.data['items'] as List)
+            .map((e) => Repo.fromJson(e))
+            .toList());
   }
 }
 
